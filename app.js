@@ -5,10 +5,10 @@ const con = mysql.createConnection({
   host: "localhost", //Where my SQL is localhost = your machine
   user: "root", // your MySQL username
   password: "root", // your mysql password
-  database: "employeeDB", // the data base you want to connect to
+  database: "employeesdb", // the data base you want to connect to
 });
 
-con.connect(function (err) {
+con.connect(function(err) {
   //Print out the error and exit id you encounter an error
   if (err) {
     console.err("coooked it");
@@ -21,11 +21,13 @@ con.connect(function (err) {
 
 // PSEUDO CODE
 
-// enquirer for add, view and update delete.
+// inquirer for add, view and update delete.
 
 // create a function so if you select one of the chocies it pops up for the selected chocie.
 
 // in the promsie use the the resposne tp
+
+
 function start (){
 
   let questions = "";
@@ -39,7 +41,7 @@ function start (){
       },
     ])
     .then(({ question }) => {
-       console.log(question);
+      //  console.log(question);
       if (question === "department") {
         addDepartment();
 
@@ -53,14 +55,14 @@ function start (){
 
    }
 
+  // 
 
 function addDepartment() {
   inquirer
     .prompt([
       {
-     
+        type: 'input',
         name: "name",
-        id: "",
         message: "what is the name of the department you want to add?  ",
 
       },
@@ -68,7 +70,8 @@ function addDepartment() {
     .then(function (answer) {
  
       con.query(
-        "INSERT INTO department SET? ",
+
+        "INSERT INTO department SET ?",
 
         {
           name: answer.name,
@@ -85,47 +88,96 @@ function addDepartment() {
 }
 
 
-function addRole() {
- inquirer
-   .prompt([
-     {
+// function addRole() {
+//  inquirer
+//    .prompt([
+//      {
     
-       name: "title",
-       message: "what is the title of the role?  ",
+//        name: "title",
+//        message: "what is the title of the role?  ",
 
-     },
-     {
+//      },
+//      {
     
-      name: "salary",
-      message: "what is salary of the role ",
+//       name: "salary",
+//       message: "what is salary of the role ",
 
-    },
+//     },
 
-    {
+//     {
     
-     name: "department id",
-     message: "what is salary of the role ",
+//      name: "department id",
+//      message: " ",
 
-   },
-   ])
-   .then(function (answer) {
+//    },
+//    ])
+//    .then(function (answer) {
 
-     con.query(
-       "INSERT INTO role SET? ",
+//      con.query(
+//        "INSERT INTO role SET? ",
 
-       {
-         name: answer.name,
-       },
+//        {
+//          title: answer.name,
+//          salary: answer.salary 
+//        },
 
-       function (err) {
-         if (err) throw err;
-         console.log("Your auction was created successfully!");
-         // re-prompt the user for if they want to bid or post
-       start();
-       }
-     );
-   });
-}
+//        function (err) {
+//          if (err) throw err;
+//          console.log("Your auction was created successfully!");
+//          // re-prompt the user for if they want to bid or post
+//        start();
+//        }
+//      );
+//    });
+// }
+
+
+// function addEmployee() {
+//  inquirer
+//    .prompt([
+//      {
+    
+//        name: "first_name",
+//        message: "what is the first name of the emplpoyee  ",
+
+//      },
+//      {
+    
+//       name: "last_name",
+//       message: "what is the last name of the employee",
+
+//     },
+
+//     {
+    
+//      name: "manager_id",
+//      message: " ",
+//     },
+//     {
+//      name: "role_id",
+//      message: " ",
+
+//    },
+//    ])
+//    .then(function (answer) {
+
+//      con.query(
+//        "INSERT INTO role SET? ",
+
+//        {
+//          first_name: answer.first_name,
+//          last_name: answer.last_name
+//        },
+
+//        function (err) {
+//          if (err) throw err;
+//          console.log("Your auction was created successfully!");
+//          // re-prompt the user for if they want to bid or post
+//        start();
+//        }
+//      );
+//    });
+// }
 
 
 addDepartment(); 
