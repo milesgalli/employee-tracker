@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const addDepartment = require("./department");
 
 const con = mysql.createConnection({
   host: "localhost", //Where my SQL is localhost = your machine
@@ -8,7 +9,7 @@ const con = mysql.createConnection({
   database: "employeesdb", // the data base you want to connect to
 });
 
-con.connect(function(err) {
+con.connect(function (err) {
   //Print out the error and exit id you encounter an error
   if (err) {
     console.err("coooked it");
@@ -19,7 +20,21 @@ con.connect(function(err) {
   console.log("Sucess!");
 });
 
+// con.query(
+//   "SELECT `first_name`, `last_name`, `title` as 'role' FROM employeesdb.employee inner join employeesdb.roles on(employee.role_id = roles.id);",
+//   function (err, resul
+// ts, fields) {
+//     console.table(results);
+//   }
+// );
+
 // PSEUDO CODE
+
+// Add departments, roles, employees
+
+// View departments, roles, employees
+
+// Update employee roles
 
 // inquirer for add, view and update delete.
 
@@ -27,9 +42,44 @@ con.connect(function(err) {
 
 // in the promsie use the the resposne tp
 
+function start() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "action",
+        message: "What would you like to do?",
+        choices: [
+          "View all employees",
+          "View all employees by department",
+          "View all roles",
+          "Add Employee, role, department",
+          "Update employee role",
+         
+          //"Update manager role"
+        ],
+      },
+    ])
+    .then(({ action }) => {
+      console.log(action);
+      if (action === "View all employees") {
+        viewEmployees();
 
-function start (){
+      } else if (action === "View all employees by department") {
+        viewEmployeesDepartment();
 
+      } else if (action === "View all roles") {
+        viewRoles();
+
+      } else if (action === "Add Employee, role, department") {
+        add();
+      } else {
+        UpdateEmployees();
+      }
+    });
+}
+
+function add() {
   let questions = "";
   inquirer
     .prompt([
@@ -37,149 +87,128 @@ function start (){
         type: "list",
         name: "question",
         message: "Would you like to add a department, role or employee ?",
-        choices: [" department ", " role", " employee"],
+        choices: ["department", "role", "employee"],
       },
     ])
     .then(({ question }) => {
-      //  console.log(question);
+      console.log(question);
       if (question === "department") {
         addDepartment();
-
       } else if (question === "role") {
         addRole();
-
       } else if (question === "employee") {
         addEmployee();
       }
     });
+}
 
-   }
-
-  // 
-
-function addDepartment() {
+function addRole() {
   inquirer
     .prompt([
       {
-        type: 'input',
-        name: "name",
-        message: "what is the name of the department you want to add?  ",
+        name: "title",
+        message: "what is the title of the role?",
+      },
+      {
+        name: "salary",
+        message: "what is salary of the role",
+      },
 
+      {
+        name: "department_id",
+        message: "what is the department id ?",
       },
     ])
     .then(function (answer) {
- 
       con.query(
-
-        "INSERT INTO department SET ?",
+        "INSERT INTO roles SET ?",
 
         {
-          name: answer.name,
+          title: answer.title,
+          salary: answer.salary,
+          department_id: answer.department_id,
         },
 
         function (err) {
           if (err) throw err;
           console.log("Your auction was created successfully!");
           // re-prompt the user for if they want to bid or post
-        start();
+          start();
         }
       );
     });
 }
 
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "first_name",
+        message: "what is the first name of the employee",
+      },
+      {
+        name: "last_name",
+        message: "what is the last name of the employee",
+      },
 
-// function addRole() {
-//  inquirer
-//    .prompt([
-//      {
-    
-//        name: "title",
-//        message: "what is the title of the role?  ",
+      {
+        name: "role_id",
+        message: "what is the role id?",
+      },
 
-//      },
-//      {
-    
-//       name: "salary",
-//       message: "what is salary of the role ",
+      {
+        name: "manager_id",
+        message: "what is the manager id?",
+      },
+    ])
+    .then(function (answer) {
+      con.query(
+        "INSERT INTO employee SET ?",
 
-//     },
+        {
+          first_name: answer.first_name,
+          last_name: answer.last_name,
+          role_id: answer.role_id,
+          manager_id: answer.manager_id,
+        },
 
-//     {
-    
-//      name: "department id",
-//      message: " ",
+        function (err) {
+          if (err) throw err;
+          console.log("Your auction was created successfully!");
+          // re-prompt the user for if they want to bid or post
+          start();
+        }
+      );
+    });
+}
 
-//    },
-//    ])
-//    .then(function (answer) {
+function viewEmployees (){
 
-//      con.query(
-//        "INSERT INTO role SET? ",
+con.query(
+  "SELECT `first_name`, `last_name`, `title` as 'role' FROM employeesdb.employee inner join employeesdb.roles on(employee.role_id = roles.id);",
+  function (err, results, fields) {
+    console.table(results);
+  }
+);
+}
 
-//        {
-//          title: answer.name,
-//          salary: answer.salary 
-//        },
+function viewEmployeesDepartment(){
+  con.query(
+    "SELECT  `first_name`, last_name,  as 'department' FROM employeesdb.department inner join employeesdb.employee on (employee.department = department);",
+    function (err, results, fields) {
+      console.table(results);
+    }
+  );
+}
 
-//        function (err) {
-//          if (err) throw err;
-//          console.log("Your auction was created successfully!");
-//          // re-prompt the user for if they want to bid or post
-//        start();
-//        }
-//      );
-//    });
-// }
-
-
-// function addEmployee() {
-//  inquirer
-//    .prompt([
-//      {
-    
-//        name: "first_name",
-//        message: "what is the first name of the emplpoyee  ",
-
-//      },
-//      {
-    
-//       name: "last_name",
-//       message: "what is the last name of the employee",
-
-//     },
-
-//     {
-    
-//      name: "manager_id",
-//      message: " ",
-//     },
-//     {
-//      name: "role_id",
-//      message: " ",
-
-//    },
-//    ])
-//    .then(function (answer) {
-
-//      con.query(
-//        "INSERT INTO role SET? ",
-
-//        {
-//          first_name: answer.first_name,
-//          last_name: answer.last_name
-//        },
-
-//        function (err) {
-//          if (err) throw err;
-//          console.log("Your auction was created successfully!");
-//          // re-prompt the user for if they want to bid or post
-//        start();
-//        }
-//      );
-//    });
-// }
+function viewRoles(){
+  con.query(
+    "SELECT `first_name`, `last_name`, `title` as 'role' FROM employeesdb.employee inner join employeesdb.roles on(employee.role_id = roles.id);",
+    function (err, results, fields) {
+      console.table(results);
+    }
+  );
+}
 
 
-addDepartment(); 
-
-start(); 
+start();
