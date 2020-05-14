@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-// const addDepartment = require("./department");
 
 
 const con = mysql.createConnection({
@@ -53,7 +52,7 @@ function start(con) {
       } else {
         updateEmployeeRoles();
       }
-      async.await()
+    
       start(); 
     });
     
@@ -195,15 +194,17 @@ function viewEmployees() {
       console.table(results);
     }
   );
+  start();
 }
 
 function viewEmployeesDepartment() {
   con.query(
-    "SELECT  `first_name`, last_name,  as 'department' FROM employeesdb.department inner join employeesdb.employee on (employee.department = department);",
+    "SELECT `first_name`, `last_name`, department.title FROM employeesdb.employee inner join employeesdb.roles on (employee.role_id = roles.id) inner join employeesdb.department on (roles.department_id = department.id)",
     function (err, results, fields) {
       console.table(results);
     }
   );
+  start();
 }
 
 function viewRoles() {
@@ -213,35 +214,32 @@ function viewRoles() {
       console.table(results);
     }
   );
+  start()
 }
 
 function updateEmployeeRoles() {
   inquirer
     .prompt([
       {
+        type: "input",
         name: "id",
         message: "what is the employee id you would like to udate?",
       },
       {
+        type: "input",
         name: "title",
         message: "what is the new title ?",
       },
-    ])
-
-    .then(function (answer) {
+    ]).then(function (answer) {
       con.query(
         "UPDATE roles SET title = ? WHERE id = ?",
 
-        // onnection.query('UPDATE users SET foo = ?, bar = ?, baz = ? WHERE id = ?', ['a', 'b', 'c', userId], function (error, results, fields) {
-        //   if (error) throw error;
-        //   // ...
-        // });
-        [ answer.title, answer.id],
+        [answer.title, answer.id],
 
         function (err) {
           if (err) throw err;
           console.log("Your action was created successfully!");
-          // re-prompt the user for if they want to bid or post
+  
         }
       );
     });
